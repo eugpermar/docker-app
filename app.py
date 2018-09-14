@@ -38,6 +38,7 @@ class MyTCPHandler(SocketServer.StreamRequestHandler):
                 raise e
 
         with open(filename, 'w') as f:
+            VERBS_CMD = 'verbs '
             tee_log = Tee(f, stdout)
             tee_log.print('{timestamp}: Client {client} connected'.format(
                           timestamp=start_timestamp,
@@ -51,12 +52,21 @@ class MyTCPHandler(SocketServer.StreamRequestHandler):
                     client=client_addr,
                     bin_line=bin_line))
 
-            p = subprocess.Popen(bin_line,
-                                 shell=True,
-                                 stdout=self.wfile,
-                                 stderr=self.wfile,
-                                 stdin=self.rfile)
-            p.wait()
+            if bin_line.startswith(VERBS_CMD):
+                import nltk
+                print('Verbs on the sentence: {verbs}'.format(
+                    verbs=[v for (v, t)
+                           in nltk.pos_tag(
+                               nltk.word_tokenize(bin_line[len(VERBS_CMD):]))
+                           if t.startswith('VB')]),
+                      file=self.wfile)
+            else:
+                p = subprocess.Popen(bin_line,
+                                     shell=True,
+                                     stdout=self.wfile,
+                                     stderr=self.wfile,
+                                     stdin=self.rfile)
+                p.wait()
 
             tee_log.print('{timestamp}: Client {client} out'.format(
                           timestamp=isonow(),
