@@ -5,3 +5,4 @@
       this?
 - [ ] Compile/debug information and tools are not included in the final
       docker image, but in another one that I can "exchange" easily.
+- [ ] New generated files are placed in .dockerignore, if it proceed.
