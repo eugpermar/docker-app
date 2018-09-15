@@ -3,3 +3,5 @@
       child process (if any).
 - [ ] Does app update any dependency? needs to update Dockerfile because of
       this?
+- [ ] Compile/debug information and tools are not included in the final
+      docker image

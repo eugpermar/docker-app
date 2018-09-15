@@ -5,9 +5,23 @@
 #
 # Please check the differences with python2.7-alpine dockerfile
 
-FROM alpine
+FROM alpine AS base
+
+#
+# DEVEL CONTAINER
+#
+
+FROM base AS devel
 
 RUN apk add --no-cache python
+COPY app.py .
+RUN python2 -OO -m compileall app.py
+
+#
+# RELEASE CONTAINER
+#
+
+FROM base
 
 RUN mkdir -m 750 logs && chown 405:405 logs
 RUN apk add --no-cache py-pip
@@ -20,6 +34,6 @@ RUN python -c "import nltk; \
 
 USER guest
 
-COPY app.py .
+COPY --from=devel app.pyo .
 
-ENTRYPOINT ["env", "NLTK_DATA=/nltk_data", "python2", "/app.py"]
+ENTRYPOINT ["env", "NLTK_DATA=/nltk_data", "python2", "/app.pyo"]
