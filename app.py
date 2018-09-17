@@ -7,6 +7,7 @@ from os import makedirs
 from sys import stdout
 
 import errno
+import signal
 import SocketServer
 import subprocess
 
@@ -62,7 +63,15 @@ class MyTCPHandler(SocketServer.StreamRequestHandler):
                           client=client_addr))
 
 
+def handler(signum, frame):
+    print('Signal handler called with signal{}'.format(signum))
+    exit(0)
+
+
 if __name__ == "__main__":
+    # Set the signal handler and a 5-second alarm
+    signal.signal(signal.SIGTERM, handler)
+
     HOST, PORT = "0.0.0.0", 9999
 
     # Create the server
