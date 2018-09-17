@@ -14,4 +14,4 @@ USER guest
 
 COPY app.py .
 
-CMD /app.py
+CMD ["python2", "/app.py"]

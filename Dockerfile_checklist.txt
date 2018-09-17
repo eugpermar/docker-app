@@ -1,1 +1,2 @@
 - [ ] Does app run as non-root user?
+- [ ] APP does run as PID 1
