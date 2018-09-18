@@ -1,2 +1,3 @@
 - [ ] Does app run as non-root user?
-- [ ] APP does run as PID 1
+- [ ] APP does run as PID 1, or it does have a proper handler for signals and
+      child process (if any).
