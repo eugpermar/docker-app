@@ -1,39 +1,27 @@
-# Another way:
-# FROM python:2.7-alpine
-# FROM python:2.7-slim
-# FROM python:...
-#
-# Please check the differences with python2.7-alpine dockerfile
+FROM golang:alpine AS devel
 
-FROM alpine AS base
+RUN apk add --no-cache git gcc musl-dev
 
-#
-# DEVEL CONTAINER
-#
+# Prepare workdir
+WORKDIR /go/src/app
+COPY app.go .
 
-FROM base AS devel
+# Dependencies
+RUN go get -d -v ./...
+RUN go install -v ./...
 
-RUN apk add --no-cache python
-COPY app.py .
-RUN python2 -OO -m compileall app.py
+# Build
+RUN env CGO_ENABLED=0 go build -buildmode=pie -a -v .
 
 #
 # RELEASE CONTAINER
 #
 
-FROM base
+FROM scratch
 
-RUN mkdir -m 750 logs && chown 405:405 logs
-RUN apk add --no-cache py-pip
-RUN pip install nltk
+COPY --from=devel /go/bin/app .
+COPY --from=devel /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
 
-RUN python -c "import nltk; \
-               nltk.download('punkt', download_dir='/nltk_data'); \
-               nltk.download('averaged_perceptron_tagger', \
-                             download_dir='/nltk_data')"
+USER 405
 
-USER guest
-
-COPY --from=devel app.pyo .
-
-ENTRYPOINT ["env", "NLTK_DATA=/nltk_data", "python2", "/app.pyo"]
+ENTRYPOINT ["/app"]
