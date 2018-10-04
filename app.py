@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from datetime import datetime
 from os import makedirs
-from sys import stdout
+from sys import stdout, argv
 
 import errno
 import signal
@@ -72,7 +72,11 @@ if __name__ == "__main__":
     # Set the signal handler and a 5-second alarm
     signal.signal(signal.SIGTERM, handler)
 
-    HOST, PORT = "0.0.0.0", 9999
+    HOST = "0.0.0.0"
+    try:
+        PORT = int(argv[1])
+    except IndexError:
+        PORT = 9999
 
     # Create the server
     server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
