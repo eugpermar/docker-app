@@ -14,4 +14,4 @@ USER guest
 
 COPY app.py .
 
-CMD ["python2", "/app.py"]
+ENTRYPOINT ["python2", "/app.py"]
