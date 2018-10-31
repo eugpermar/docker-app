@@ -72,5 +72,6 @@ COPY --from=release-devel --chown=405 /logs/ /logs/
 COPY --from=release-devel app.pyo .
 COPY --from=release-devel /nltk_data /nltk_data/
 
+VOLUME /logs
 
 ENTRYPOINT ["env", "NLTK_DATA=/nltk_data", "python2", "/app.pyo"]
