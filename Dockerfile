@@ -26,7 +26,7 @@ RUN python -c "import nltk; \
                nltk.download('averaged_perceptron_tagger', \
                              download_dir='/nltk_data')"
 
-COPY app.py .
+COPY app.py back_server.py ./
 
 #
 # DEBUG CONTAINER
@@ -49,7 +49,7 @@ CMD exec env NLTK_DATA=/nltk_data python2 -m pdb /app.py
 FROM devel AS release-devel
 
 # Compile here everything, do not including source
-RUN python2 -OO -m compileall app.py /nltk_data
+RUN python2 -OO -m compileall app.py back_server.py /nltk_data
 
 # Delete everything we don't want! We can continue with pip, python libraries...
 RUN find /nltk_data/ -type d \
@@ -69,7 +69,7 @@ RUN apk add --no-cache python2 && apk add --no-cache py-pip && \
 USER guest
 
 COPY --from=release-devel --chown=405 /logs/ /logs/
-COPY --from=release-devel app.pyo .
+COPY --from=release-devel app.pyo back_server.pyo ./
 COPY --from=release-devel /nltk_data /nltk_data/
 
 VOLUME /logs

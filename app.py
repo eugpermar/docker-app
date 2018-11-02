@@ -2,12 +2,14 @@
 
 from __future__ import print_function
 
+from contextlib import closing
 from datetime import datetime
 from os import makedirs
 from sys import stdout, argv
 
 import errno
 import signal
+import socket
 import SocketServer
 import subprocess
 
@@ -26,6 +28,8 @@ class Tee(object):
 
 
 class MyTCPHandler(SocketServer.StreamRequestHandler):
+    allow_reuse_address = True
+
     def handle(self):
         client_addr = self.client_address
         start_timestamp = isonow()
@@ -39,6 +43,7 @@ class MyTCPHandler(SocketServer.StreamRequestHandler):
 
         with open(filename, 'w') as f:
             VERBS_CMD = 'verbs '
+            ANSWER_CMD = 'answer '
             tee_log = Tee(f, stdout)
             tee_log.print('{timestamp}: Client {client} connected'.format(
                           timestamp=start_timestamp,
@@ -60,6 +65,18 @@ class MyTCPHandler(SocketServer.StreamRequestHandler):
                                nltk.word_tokenize(bin_line[len(VERBS_CMD):]))
                            if t.startswith('VB')]),
                       file=self.wfile)
+            elif bin_line.startswith(ANSWER_CMD):
+                recv_bytes = 0
+                line = ''
+
+                with closing(socket.socket(socket.AF_INET,
+                                           socket.SOCK_STREAM)) as tsocket:
+                    tsocket.connect(("localhost", 9998))
+                    while recv_bytes < 2:
+                        line += tsocket.recv(2 - recv_bytes)
+                        recv_bytes = len(line)
+
+                self.wfile.write(line)
             else:
                 p = subprocess.Popen(bin_line,
                                      shell=True,
@@ -93,6 +110,9 @@ if __name__ == "__main__":
 
     print('Listening on port {port}'.format(port=PORT))
 
+    answer_server = subprocess.Popen(['python2', './back_server.pyo'])
+
     # Activate the server; this will keep running until you
-    # interrupt the program with Ctrl-C
+    # interrupt the program with Ctrl-C.
+    # Yes, we will not clean answer_server.
     server.serve_forever()
