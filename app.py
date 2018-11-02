@@ -71,7 +71,7 @@ class MyTCPHandler(SocketServer.StreamRequestHandler):
 
                 with closing(socket.socket(socket.AF_INET,
                                            socket.SOCK_STREAM)) as tsocket:
-                    tsocket.connect(("localhost", 9998))
+                    tsocket.connect(("answer_svc", 9998))
                     while recv_bytes < 2:
                         line += tsocket.recv(2 - recv_bytes)
                         recv_bytes = len(line)
@@ -110,9 +110,6 @@ if __name__ == "__main__":
 
     print('Listening on port {port}'.format(port=PORT))
 
-    answer_server = subprocess.Popen(['python2', './back_server.pyo'])
-
     # Activate the server; this will keep running until you
     # interrupt the program with Ctrl-C.
-    # Yes, we will not clean answer_server.
     server.serve_forever()

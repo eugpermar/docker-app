@@ -1,0 +1,9 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "9998:9998"
+
+  answer_svc:
+    build: "answer_server/"

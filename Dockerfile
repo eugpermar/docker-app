@@ -26,7 +26,7 @@ RUN python -c "import nltk; \
                nltk.download('averaged_perceptron_tagger', \
                              download_dir='/nltk_data')"
 
-COPY app.py back_server.py ./
+COPY app.py ./
 
 #
 # DEBUG CONTAINER
@@ -69,7 +69,7 @@ RUN apk add --no-cache python2 && apk add --no-cache py-pip && \
 USER guest
 
 COPY --from=release-devel --chown=405 /logs/ /logs/
-COPY --from=release-devel app.pyo back_server.pyo ./
+COPY --from=release-devel app.pyo ./
 COPY --from=release-devel /nltk_data /nltk_data/
 
 VOLUME /logs
