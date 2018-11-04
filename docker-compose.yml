@@ -4,6 +4,7 @@ services:
     build: .
     ports:
       - "9998:9998"
-
+    depends_on:
+      - answer_svc
   answer_svc:
     build: "answer_server/"
