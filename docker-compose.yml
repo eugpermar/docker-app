@@ -1,4 +1,6 @@
 version: '3'
+volumes:
+  applog:
 services:
   app:
     build: .
@@ -6,5 +8,7 @@ services:
       - "9998:9998"
     depends_on:
       - answer_svc
+    volumes:
+      - applog:/logs
   answer_svc:
     build: "answer_server/"
