@@ -5,7 +5,7 @@ services:
   app:
     build: .
     ports:
-      - "9998:9998"
+      - "${APP_PORT}:${APP_PORT}"
     depends_on:
       - answer_svc
     volumes:
