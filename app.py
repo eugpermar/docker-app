@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from contextlib import closing
 from datetime import datetime
-from os import makedirs
+from os import environ, makedirs
 from sys import stdout, argv
 
 import errno
@@ -104,6 +104,9 @@ if __name__ == "__main__":
         PORT = int(argv[1])
     except IndexError:
         PORT = 9999
+
+    if 'motd' in environ:
+        print('{}'.format(environ['motd']))
 
     # Create the server
     server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
