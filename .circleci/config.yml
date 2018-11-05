@@ -28,3 +28,6 @@ jobs:
       - run: while ! docker-compose exec answer_svc apk add --no-cache netcat-openbsd; do :; done
       - run: docker-compose exec answer_svc sh -c "echo ls | nc app 9999"
 
+      # Need to copy logs file from container to analyze them
+      - run: docker cp "$(docker-compose ps -q app):/logs" .; cat logs/log.*
+
