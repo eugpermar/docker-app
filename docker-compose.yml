@@ -12,5 +12,7 @@ services:
       - answer_svc
     volumes:
       - applog:/logs
+    # circleci docker-compose workaround: No CMD == /bin/sh
+    command: ["9999"]
   answer_svc:
     build: "answer_server/"
